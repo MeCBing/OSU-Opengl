@@ -1,0 +1,10 @@
+
+ERROR: 0:22: 'rand' : undeclared identifier 
+ERROR: 0:22: 'rand' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:22: 'rand' : function is not known 
+ERROR: 0:22: '%' : wrong operand types no operation '%' exists that takes a left-hand operand of type 'const float' and a right operand of type 'const int' (or there is no acceptable conversion)
+ERROR: 0:23: 'printf' : undeclared identifier 
+ERROR: 0:23: '' : illegal character (") (0x22)
+ERROR: 0:23: '%' : syntax error syntax error
+
+
