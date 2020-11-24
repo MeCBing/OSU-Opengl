@@ -1,10 +1,1 @@
-glPushMatrix();
-	// 	glEnable( GL_TEXTURE_2D );
-	// 	glBindTexture( GL_TEXTURE_2D, Tex0 );
-	// 	//glRotatef(angle,0.,1.,0.);
-	// 	glTranslatef(-10., 0., 0.);
-	// 	glBegin( GL_QUADS );
-	// 		MjbSphere(5., 100., 100.);
-	// 	glEnd();
-	// 	glDisable( GL_TEXTURE_2D );
-	// glPopMatrix();
+glRotatef(90., 0., -1., 0.);
