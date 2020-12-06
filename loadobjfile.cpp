@@ -3,9 +3,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
+#include "GL/glew.h"
 #include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+// #include <SOIL.h>
 
 #include <vector>
+
+// #include "bmptotexture.cpp"
 
 
 // delimiters for parsing the obj file:
@@ -183,6 +189,19 @@ LoadObjFile( char *name )
 			continue;
 		}
 
+		// if( strcmp( cmd, "usemtl") == 0)
+		// {
+		// 	str = strtok( NULL, OBJDELIMS );
+		// 	int width, height;
+		// 	unsigned char * img = BmpToTexture( str + '.jpg', &width, &height);
+		// 	glBindTexture( GL_TEXTURE_2D, g ); // make the Tex0 texture current and set its parameters
+		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		// 	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+		// 	glTexImage2D( GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img );
+		// }
 
 		if( strcmp( cmd, "f" )  ==  0 )
 		{

@@ -1,1 +1,3 @@
-glRotatef(90., 0., -1., 0.);
+EyeX = flightpoint[NowFlightPoint].x;
+	EyeY = flightpoint[NowFlightPoint].y;
+	EyeZ = flightpoint[NowFlightPoint].z;
