@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -624,11 +625,11 @@ Display( )
 
 	// possibly draw the axes:
 
-	// if( AxesOn != 0 )
-	// {
-	// 	glColor3fv( &Colors[WhichColor][0] );
-	// 	glCallList( AxesList );
-	// }
+	if( AxesOn != 0 )
+	{
+		glColor3fv( &Colors[WhichColor][0] );
+		glCallList( AxesList );
+	}
 
 
 	// since we are using glScalef( ), be sure normals get unitized:
@@ -657,7 +658,7 @@ Display( )
 	int a;
 	glPushMatrix();
 		//glScalef(0.91, 0.91, 0.91);
-		glTranslatef(-2, 0, 0);
+		
 		a = NowFlightPoint - 90;
 		if (a < 0)
 			a += 359;
@@ -791,7 +792,12 @@ Display( )
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity( );
 	glColor3f( 1., 1., 1. );
-	DoRasterString( 5., 5., 0., "Space Travel" );
+	char s[64];
+	snprintf(s, sizeof s, "Speed : %.1f", Speed);
+	//const char *s = "Speed : " + (Speed);
+	DoRasterString( 5., 5., 0., s);
+	snprintf(s, sizeof s, "(%.1f, %.1f, %.1f)", EyeX, EyeY, EyeZ);
+	DoRasterString( 35., 5., 0., s);
 
 
 	// swap the double-buffered framebuffers:
@@ -1210,9 +1216,10 @@ InitLists( )
 	glutSetWindow( MainWindow );
 
 	// create the object:
-
+	
 	ShipList = glGenLists( 1 );
 	glNewList( ShipList, GL_COMPILE );
+		glTranslatef(2.25, 0., 0.);
         LoadObjFile("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/star wars x-wing.obj");
 	glEndList( );
 
