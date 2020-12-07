@@ -11,7 +11,7 @@
 
 #include <vector>
 
-// #include "bmptotexture.cpp"
+//#include "bmptotexture.cpp"
 
 
 // delimiters for parsing the obj file:
@@ -50,9 +50,13 @@ void	ReadObjVTN( char *, int *, int *, int * );
 float	Unit( float [3] );
 float	Unit( float [3], float [3] );
 
+unsigned char *	BmpToTexture( char const *, int *, int * );
+void			HsvRgb( float[3], float [3] );
+int				ReadInt( FILE * );
+short			ReadShort( FILE * );
 
 int
-LoadObjFile( char *name )
+LoadObjFile( char *name, GLuint g )
 {
 	char *cmd;		// the command string
 	char *str;		// argument string
@@ -193,7 +197,9 @@ LoadObjFile( char *name )
 		// {
 		// 	str = strtok( NULL, OBJDELIMS );
 		// 	int width, height;
-		// 	unsigned char * img = BmpToTexture( str + '.jpg', &width, &height);
+		// 	char s[128];
+		// 	snprintf(s, sizeof s, "C:/Users/super/Desktop/550/OSU-Opengl/star_wars/bmp/%s.bmp", str);
+		// 	unsigned char * img = BmpToTexture( s, &width, &height);
 		// 	glBindTexture( GL_TEXTURE_2D, g ); // make the Tex0 texture current and set its parameters
 		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 		// 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
@@ -355,19 +361,19 @@ LoadObjFile( char *name )
 
 
 
-// void
-// Cross( float v1[3], float v2[3], float vout[3] )
-// {
-// 	float tmp[3];
+void
+Cross( float v1[3], float v2[3], float vout[3] )
+{
+	float tmp[3];
 
-// 	tmp[0] = v1[1]*v2[2] - v2[1]*v1[2];
-// 	tmp[1] = v2[0]*v1[2] - v1[0]*v2[2];
-// 	tmp[2] = v1[0]*v2[1] - v2[0]*v1[1];
+	tmp[0] = v1[1]*v2[2] - v2[1]*v1[2];
+	tmp[1] = v2[0]*v1[2] - v1[0]*v2[2];
+	tmp[2] = v1[0]*v2[1] - v2[0]*v1[1];
 
-// 	vout[0] = tmp[0];
-// 	vout[1] = tmp[1];
-// 	vout[2] = tmp[2];
-// }
+	vout[0] = tmp[0];
+	vout[1] = tmp[1];
+	vout[2] = tmp[2];
+}
 
 
 
@@ -391,29 +397,29 @@ Unit( float v[3] )
 
 
 
-// float
-// Unit( float vin[3], float vout[3] )
-// {
-// 	float dist;
+float
+Unit( float vin[3], float vout[3] )
+{
+	float dist;
 
-// 	dist = vin[0]*vin[0] + vin[1]*vin[1] + vin[2]*vin[2];
+	dist = vin[0]*vin[0] + vin[1]*vin[1] + vin[2]*vin[2];
 
-// 	if( dist > 0.0 )
-// 	{
-// 		dist = sqrt( dist );
-// 		vout[0] = vin[0] / dist;
-// 		vout[1] = vin[1] / dist;
-// 		vout[2] = vin[2] / dist;
-// 	}
-// 	else
-// 	{
-// 		vout[0] = vin[0];
-// 		vout[1] = vin[1];
-// 		vout[2] = vin[2];
-// 	}
+	if( dist > 0.0 )
+	{
+		dist = sqrt( dist );
+		vout[0] = vin[0] / dist;
+		vout[1] = vin[1] / dist;
+		vout[2] = vin[2] / dist;
+	}
+	else
+	{
+		vout[0] = vin[0];
+		vout[1] = vin[1];
+		vout[2] = vin[2];
+	}
 
-// 	return dist;
-// }
+	return dist;
+}
 
 
 char *
@@ -481,4 +487,166 @@ ReadObjVTN( char *str, int *v, int *t, int *n )
 			sscanf( str, "%d", v );
 		}
 	}
+}
+
+int	Read_Int( FILE * );
+short	Read_Short( FILE * );
+
+struct bmfh_
+{
+	short bfType;
+	int bfSize;
+	short bfReserved1;
+	short bfReserved2;
+	int bfOffBits;
+} FileHeader1;
+
+struct bmih_
+{
+	int biSize;
+	int biWidth;
+	int biHeight;
+	short biPlanes;
+	short biBitCount;
+	int biCompression;
+	int biSizeImage;
+	int biXPelsPerMeter;
+	int biYPelsPerMeter;
+	int biClrUsed;
+	int biClrImportant;
+} InfoHeader1;
+
+const int birgb_ = { 0 };
+
+unsigned char *
+BmpToTexture( char *filename, int *width, int *height )
+{
+
+	int s, t, e;		// counters
+	int numextra;		// # extra bytes each line in the file is padded with
+	FILE *fp;
+	unsigned char *texture;
+	int nums, numt;
+	unsigned char *tp;
+
+
+	fp = fopen( filename, "rb" );
+	if( fp == NULL )
+	{
+		fprintf( stderr, "Cannot open Bmp file '%s'\n", filename );
+		return NULL;
+	}
+
+	FileHeader1.bfType = Read_Short( fp );
+
+
+	// if bfType is not 0x4d42, the file is not a bmp:
+
+	if( FileHeader1.bfType != 0x4d42 )
+	{
+		fprintf( stderr, "Wrong type of file: 0x%0x\n", FileHeader1.bfType );
+		fclose( fp );
+		return NULL;
+	}
+
+
+	FileHeader1.bfSize = Read_Int( fp );
+	FileHeader1.bfReserved1 = Read_Short( fp );
+	FileHeader1.bfReserved2 = Read_Short( fp );
+	FileHeader1.bfOffBits = Read_Int( fp );
+
+
+	InfoHeader1.biSize = Read_Int( fp );
+	InfoHeader1.biWidth = Read_Int( fp );
+	InfoHeader1.biHeight = Read_Int( fp );
+
+	nums = InfoHeader1.biWidth;
+	numt = InfoHeader1.biHeight;
+
+	InfoHeader1.biPlanes = Read_Short( fp );
+	InfoHeader1.biBitCount = Read_Short( fp );
+	InfoHeader1.biCompression = Read_Int( fp );
+	InfoHeader1.biSizeImage = Read_Int( fp );
+	InfoHeader1.biXPelsPerMeter = Read_Int( fp );
+	InfoHeader1.biYPelsPerMeter = Read_Int( fp );
+	InfoHeader1.biClrUsed = Read_Int( fp );
+	InfoHeader1.biClrImportant = Read_Int( fp );
+
+
+	// fprintf( stderr, "Image size found: %d x %d\n", ImageWidth, ImageHeight );
+
+
+	texture = new unsigned char[ 3 * nums * numt ];
+	if( texture == NULL )
+	{
+		fprintf( stderr, "Cannot allocate the texture array!\b" );
+		return NULL;
+	}
+
+
+	// extra padding bytes:
+
+	numextra =  4*(( (3*InfoHeader1.biWidth)+3)/4) - 3*InfoHeader1.biWidth;
+
+
+	// we do not support compression:
+
+	if( InfoHeader1.biCompression != birgb_ )
+	{
+		fprintf( stderr, "Wrong type of image compression: %d\n", InfoHeader1.biCompression );
+		fclose( fp );
+		return NULL;
+	}
+	
+
+
+	rewind( fp );
+	fseek( fp, 14+40, SEEK_SET );
+
+	if( InfoHeader1.biBitCount == 24 )
+	{
+		for( t = 0, tp = texture; t < numt; t++ )
+		{
+			for( s = 0; s < nums; s++, tp += 3 )
+			{
+				*(tp+2) = fgetc( fp );		// b
+				*(tp+1) = fgetc( fp );		// g
+				*(tp+0) = fgetc( fp );		// r
+			}
+
+			for( e = 0; e < numextra; e++ )
+			{
+				fgetc( fp );
+			}
+		}
+	}
+
+	fclose( fp );
+
+	*width = nums;
+	*height = numt;
+	return texture;
+}
+
+
+
+int
+Read_Int( FILE *fp )
+{
+	unsigned char b3, b2, b1, b0;
+	b0 = fgetc( fp );
+	b1 = fgetc( fp );
+	b2 = fgetc( fp );
+	b3 = fgetc( fp );
+	return ( b3 << 24 )  |  ( b2 << 16 )  |  ( b1 << 8 )  |  b0;
+}
+
+
+short
+Read_Short( FILE *fp )
+{
+	unsigned char b1, b0;
+	b0 = fgetc( fp );
+	b1 = fgetc( fp );
+	return ( b1 << 8 )  |  b0;
 }

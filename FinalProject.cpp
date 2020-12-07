@@ -16,6 +16,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include "loadobjfile.cpp"
+//#include "bmptotexture.cpp"
 //#include "objload.cpp"
 //#include "sphere.cpp"
 
@@ -191,6 +192,7 @@ int		DepthBufferOn;			// != 0 means to use the z-buffer
 int		DepthFightingOn;		// != 0 means to force the creation of z-fighting
 GLuint	ShipList;				// object display list
 GLuint 	PlantLine;
+GLuint 	SaturnoList;
 int		MainWindow;				// window id for main graphics window
 float	Scale;					// scaling factor
 int		ShadowsOn;				// != 0 means to turn shadows on
@@ -199,6 +201,7 @@ int		WhichProjection;		// ORTHO or PERSP
 int		Xmouse, Ymouse;			// mouse values
 float	Xrot, Yrot;				// rotation angles in degrees
 GLuint 	Sun, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune;
+GLuint 	Ship;
 bool 	ShowPlantsNames;
 bool 	ShowLine;
 float   Time;
@@ -246,9 +249,9 @@ void			HsvRgb( float[3], float [3] );
 int				ReadInt( FILE * );
 short			ReadShort( FILE * );
 
-void			Cross(float[3], float[3], float[3]);
+// void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
-float			Unit(float [3], float [3]);
+// float			Unit(float [3], float [3]);
 
 
 
@@ -658,7 +661,7 @@ Display( )
 	int a;
 	glPushMatrix();
 		//glScalef(0.91, 0.91, 0.91);
-		
+		//glBindTexture( GL_TEXTURE_2D, Ship );
 		a = NowFlightPoint - 90;
 		if (a < 0)
 			a += 359;
@@ -727,12 +730,14 @@ Display( )
     glPopMatrix();
 
 	glPushMatrix();
+		glScalef(0.001, 0.001, 0.001);
 		glBindTexture( GL_TEXTURE_2D, Saturn );
 		glRotatef(34 * SpaceTime, 0., 1., 0.);
 		glTranslatef(80., 0., 0.);
 		if (ShowPlantsNames) {
 			DoRasterString( 0., 6., 0., "Saturn" );
 		}
+		//glCallList(SaturnoList);
 		MjbSphere(5., 50., 50.);
     glPopMatrix();
 
@@ -1188,15 +1193,15 @@ InitGraphics( )
 	glGenTextures( 1, &Uranus );
 	glGenTextures( 1, &Neptune );
 
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_sun.bmp", Sun);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_mercury.bmp", Mercury);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_venus.bmp", Venus);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_earth.bmp", Earth);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_mars.bmp", Mars);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_jupiter.bmp", Jupiter);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_saturn.bmp", Saturn);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_uranus.bmp", Uranus);
-	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/2k_neptune.bmp", Neptune);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_sun.bmp", Sun);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_mercury.bmp", Mercury);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_venus.bmp", Venus);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_earth.bmp", Earth);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_mars.bmp", Mars);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_jupiter.bmp", Jupiter);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_saturn.bmp", Saturn);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_uranus.bmp", Uranus);
+	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_neptune.bmp", Neptune);
 
 	
 }
@@ -1220,8 +1225,14 @@ InitLists( )
 	ShipList = glGenLists( 1 );
 	glNewList( ShipList, GL_COMPILE );
 		glTranslatef(2.25, 0., 0.);
-        LoadObjFile("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/star wars x-wing.obj");
+		glGenTextures( 1, &Ship );
+        LoadObjFile("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/star wars x-wing.obj", Ship);
 	glEndList( );
+
+	// SaturnoList = glGenLists( 1 );
+	// glNewList( SaturnoList, GL_COMPILE );
+	// 	LoadObjFile("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/saturno.obj");
+	// glEndList();
 
 	PlantLine = glGenLists( 1 );
 	glNewList( PlantLine, GL_COMPILE );
@@ -1302,10 +1313,6 @@ Keyboard( unsigned char c, int x, int y )
 		case 'a':
 		case 'A':
 			//printf("A");
-			// if (EyeZ > 0)
-			// 	EyeX -= Speed;
-			// else if (EyeZ < 0)
-			// 	EyeX += Speed;
 			NowFlightPoint++;
 			if (NowFlightPoint > 359)
 				NowFlightPoint = 0;
@@ -1313,23 +1320,19 @@ Keyboard( unsigned char c, int x, int y )
 		case 'd':
 		case 'D':
 			//printf("D");
-			// if (EyeZ > 0)
-			// 	EyeX += Speed;
-			// else if (EyeZ < 0)
-			// 	EyeX -= Speed;
 			NowFlightPoint--;
 			if (NowFlightPoint < 0)
 				NowFlightPoint = 359;
 			break;
 
 		case '+':
-			printf("Speed: %f", Speed);
+			//printf("Speed: %f", Speed);
 			Speed += 0.1;
 			if (Speed > 3)
 				Speed = 3.;
 			break;
 		case '-':
-			printf("Speed: %f", Speed);
+			//printf("Speed: %f", Speed);
 			Speed -= 0.1;
 			if (Speed < 0.)
 				Speed = 0.;
@@ -1876,17 +1879,17 @@ HsvRgb( float hsv[3], float rgb[3] )
 	rgb[2] = b;
 }
 
-void
-Cross(float v1[3], float v2[3], float vout[3])
-{
-	float tmp[3];
-	tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
-	tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
-	tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
-	vout[0] = tmp[0];
-	vout[1] = tmp[1];
-	vout[2] = tmp[2];
-}
+// void
+// Cross(float v1[3], float v2[3], float vout[3])
+// {
+// 	float tmp[3];
+// 	tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
+// 	tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
+// 	tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
+// 	vout[0] = tmp[0];
+// 	vout[1] = tmp[1];
+// 	vout[2] = tmp[2];
+// }
 
 float
 Dot(float v1[3], float v2[3])
@@ -1894,22 +1897,22 @@ Dot(float v1[3], float v2[3])
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
-float
-Unit(float vin[3], float vout[3])
-{
-	float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
-	if (dist > 0.0)
-	{
-		dist = sqrtf(dist);
-		vout[0] = vin[0] / dist;
-		vout[1] = vin[1] / dist;
-		vout[2] = vin[2] / dist;
-	}
-	else
-	{
-		vout[0] = vin[0];
-		vout[1] = vin[1];
-		vout[2] = vin[2];
-	}
-	return dist;
-}
+// float
+// Unit(float vin[3], float vout[3])
+// {
+// 	float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
+// 	if (dist > 0.0)
+// 	{
+// 		dist = sqrtf(dist);
+// 		vout[0] = vin[0] / dist;
+// 		vout[1] = vin[1] / dist;
+// 		vout[2] = vin[2] / dist;
+// 	}
+// 	else
+// 	{
+// 		vout[0] = vin[0];
+// 		vout[1] = vin[1];
+// 		vout[2] = vin[2];
+// 	}
+// 	return dist;
+// }

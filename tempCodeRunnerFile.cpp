@@ -1,9 +1,3 @@
-#include <stdio.h>
-
-int	ReadInt( FILE * );
-short	ReadShort( FILE * );
-
-
 struct bmfh
 {
 	short bfType;
@@ -30,25 +24,12 @@ struct bmih
 
 const int birgb = { 0 };
 
+// read a BMP file into a Texture:
 
-
-/**
- ** read a BMP file into a Texture:
- **/
-
-char *
-BmpToTexture( char *filename, int *width, int *height )
+unsigned char *
+BmpToTexture( char const *filename, int *width, int *height )
 {
-
-	int s, t, e;		// counters
-	int numextra;		// # extra bytes each line in the file is padded with
-	FILE *fp;
-	unsigned char *texture;
-	int nums, numt;
-	unsigned char *tp;
-
-
-	fp = fopen( filename, "rb" );
+	FILE *fp = fopen( filename, "rb" );
 	if( fp == NULL )
 	{
 		fprintf( stderr, "Cannot open Bmp file '%s'\n", filename );
@@ -62,24 +43,22 @@ BmpToTexture( char *filename, int *width, int *height )
 
 	if( FileHeader.bfType != 0x4d42 )
 	{
-		fprintf( stderr, "Wrong type of file: 0x%0x\n", FileHeader.bfType );
+		fprintf( stderr, "File '%s' is the wrong type of file: 0x%0x\n", filename, FileHeader.bfType );
 		fclose( fp );
 		return NULL;
 	}
-
 
 	FileHeader.bfSize = ReadInt( fp );
 	FileHeader.bfReserved1 = ReadShort( fp );
 	FileHeader.bfReserved2 = ReadShort( fp );
 	FileHeader.bfOffBits = ReadInt( fp );
 
-
 	InfoHeader.biSize = ReadInt( fp );
 	InfoHeader.biWidth = ReadInt( fp );
 	InfoHeader.biHeight = ReadInt( fp );
 
-	nums = InfoHeader.biWidth;
-	numt = InfoHeader.biHeight;
+	int nums = InfoHeader.biWidth;
+	int numt = InfoHeader.biHeight;
 
 	InfoHeader.biPlanes = ReadShort( fp );
 	InfoHeader.biBitCount = ReadShort( fp );
@@ -90,49 +69,44 @@ BmpToTexture( char *filename, int *width, int *height )
 	InfoHeader.biClrUsed = ReadInt( fp );
 	InfoHeader.biClrImportant = ReadInt( fp );
 
+	fprintf( stderr, "Image size in file '%s' is: %d x %d\n", filename, nums, numt );
 
-	// fprintf( stderr, "Image size found: %d x %d\n", ImageWidth, ImageHeight );
-
-
-	texture = new unsigned char[ 3 * nums * numt ];
+	unsigned char * texture = new unsigned char[ 3 * nums * numt ];
 	if( texture == NULL )
 	{
 		fprintf( stderr, "Cannot allocate the texture array!\b" );
 		return NULL;
 	}
 
-
 	// extra padding bytes:
 
-	numextra =  4*(( (3*InfoHeader.biWidth)+3)/4) - 3*InfoHeader.biWidth;
-
+	int numextra =  4*(( (3*InfoHeader.biWidth)+3)/4) - 3*InfoHeader.biWidth;
 
 	// we do not support compression:
 
 	if( InfoHeader.biCompression != birgb )
 	{
-		fprintf( stderr, "Wrong type of image compression: %d\n", InfoHeader.biCompression );
+		fprintf( stderr, "Image file '%s' has the wrong type of image compression: %d\n", filename, InfoHeader.biCompression );
 		fclose( fp );
 		return NULL;
 	}
-	
-
 
 	rewind( fp );
 	fseek( fp, 14+40, SEEK_SET );
 
 	if( InfoHeader.biBitCount == 24 )
 	{
-		for( t = 0, tp = texture; t < numt; t++ )
+		unsigned char *tp = texture;
+		for( int t = 0; t < numt; t++ )
 		{
-			for( s = 0; s < nums; s++, tp += 3 )
+			for( int s = 0; s < nums; s++, tp += 3 )
 			{
 				*(tp+2) = fgetc( fp );		// b
 				*(tp+1) = fgetc( fp );		// g
 				*(tp+0) = fgetc( fp );		// r
 			}
 
-			for( e = 0; e < numextra; e++ )
+			for( int e = 0; e < numextra; e++ )
 			{
 				fgetc( fp );
 			}
@@ -146,8 +120,6 @@ BmpToTexture( char *filename, int *width, int *height )
 	return texture;
 }
 
-
-
 int
 ReadInt( FILE *fp )
 {
@@ -158,7 +130,6 @@ ReadInt( FILE *fp )
 	b3 = fgetc( fp );
 	return ( b3 << 24 )  |  ( b2 << 16 )  |  ( b1 << 8 )  |  b0;
 }
-
 
 short
 ReadShort( FILE *fp )
