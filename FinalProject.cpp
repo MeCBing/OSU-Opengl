@@ -730,7 +730,7 @@ Display( )
     glPopMatrix();
 
 	glPushMatrix();
-		glScalef(0.001, 0.001, 0.001);
+		//glScalef(0.001, 0.001, 0.001);
 		glBindTexture( GL_TEXTURE_2D, Saturn );
 		glRotatef(34 * SpaceTime, 0., 1., 0.);
 		glTranslatef(80., 0., 0.);
@@ -1193,6 +1193,7 @@ InitGraphics( )
 	glGenTextures( 1, &Uranus );
 	glGenTextures( 1, &Neptune );
 
+	// Be careful if you want to run my code. The image and obj file place must change.
 	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_sun.bmp", Sun);
 	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_mercury.bmp", Mercury);
 	Read2DTexture("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/Plant_bmp/2k_venus.bmp", Venus);
@@ -1226,6 +1227,7 @@ InitLists( )
 	glNewList( ShipList, GL_COMPILE );
 		glTranslatef(2.25, 0., 0.);
 		glGenTextures( 1, &Ship );
+		// Be careful if you want to run my code. The image and obj file place must change.
         LoadObjFile("C:/Users/super/Desktop/550/OSU-Opengl/star_wars/star wars x-wing.obj", Ship);
 	glEndList( );
 
