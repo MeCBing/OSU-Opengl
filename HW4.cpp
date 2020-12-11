@@ -243,9 +243,9 @@ void			HsvRgb( float[3], float [3] );
 int				ReadInt( FILE * );
 short			ReadShort( FILE * );
 
-void			Cross(float[3], float[3], float[3]);
+// void			Cross(float[3], float[3], float[3]);
 float			Dot(float [3], float [3]);
-float			Unit(float [3], float [3]);
+// float			Unit(float [3], float [3]);
 
 
 float *
@@ -591,16 +591,16 @@ Display( )
 		glCallList(Sphere);
 	glPopMatrix();
 
-	// glPushMatrix();
-	// 	glEnable( GL_TEXTURE_2D );
-	// 	glBindTexture( GL_TEXTURE_2D, Tex0 );
-	// 	//glRotatef(angle,0.,1.,0.);
-	// 	glTranslatef(-10., 0., 0.);
-	// 	glBegin( GL_QUADS );
-	// 		MjbSphere(5., 100., 100.);
-	// 	glEnd();
-	// 	glDisable( GL_TEXTURE_2D );
-	// glPopMatrix();
+	glPushMatrix();
+		glEnable( GL_TEXTURE_2D );
+		glBindTexture( GL_TEXTURE_2D, Tex0 );
+		//glRotatef(angle,0.,1.,0.);
+		glTranslatef(-10., 0., 0.);
+		glBegin( GL_QUADS );
+			MjbSphere(5., 100., 100.);
+		glEnd();
+		glDisable( GL_TEXTURE_2D );
+	glPopMatrix();
 	
 	glDisable(GL_LIGHTING);
 
@@ -976,7 +976,7 @@ InitGraphics( )
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     glTexImage2D( GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureArray0 );
 
 }
@@ -1656,17 +1656,17 @@ HsvRgb( float hsv[3], float rgb[3] )
 	rgb[2] = b;
 }
 
-void
-Cross(float v1[3], float v2[3], float vout[3])
-{
-	float tmp[3];
-	tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
-	tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
-	tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
-	vout[0] = tmp[0];
-	vout[1] = tmp[1];
-	vout[2] = tmp[2];
-}
+// void
+// Cross(float v1[3], float v2[3], float vout[3])
+// {
+// 	float tmp[3];
+// 	tmp[0] = v1[1] * v2[2] - v2[1] * v1[2];
+// 	tmp[1] = v2[0] * v1[2] - v1[0] * v2[2];
+// 	tmp[2] = v1[0] * v2[1] - v2[0] * v1[1];
+// 	vout[0] = tmp[0];
+// 	vout[1] = tmp[1];
+// 	vout[2] = tmp[2];
+// }
 
 float
 Dot(float v1[3], float v2[3])
@@ -1674,25 +1674,25 @@ Dot(float v1[3], float v2[3])
 	return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
 }
 
-float
-Unit(float vin[3], float vout[3])
-{
-	float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
-	if (dist > 0.0)
-	{
-		dist = sqrtf(dist);
-		vout[0] = vin[0] / dist;
-		vout[1] = vin[1] / dist;
-		vout[2] = vin[2] / dist;
-	}
-	else
-	{
-		vout[0] = vin[0];
-		vout[1] = vin[1];
-		vout[2] = vin[2];
-	}
-	return dist;
-}
+// float
+// Unit(float vin[3], float vout[3])
+// {
+// 	float dist = vin[0] * vin[0] + vin[1] * vin[1] + vin[2] * vin[2];
+// 	if (dist > 0.0)
+// 	{
+// 		dist = sqrtf(dist);
+// 		vout[0] = vin[0] / dist;
+// 		vout[1] = vin[1] / dist;
+// 		vout[2] = vin[2] / dist;
+// 	}
+// 	else
+// 	{
+// 		vout[0] = vin[0];
+// 		vout[1] = vin[1];
+// 		vout[2] = vin[2];
+// 	}
+// 	return dist;
+// }
 
 bool	Distort;		// global -- true means to distort the texture
 
