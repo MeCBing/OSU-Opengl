@@ -1,0 +1,54 @@
+##OpenGL GLIB
+
+Perspective 90
+LookAt 0 2 4  0 2 0  0 1 0
+
+
+Vertex   HW6.vert
+Fragment HW6.frag
+Program  HW6				\
+	uTol <0. 0. .5>			\
+	uAd <.001 .1 .5>		\
+	uBd <.001 .1 .5>		\
+    uNoiseAmp <0. 0. 1.>    \
+    uNoiseFreq <0. 1. 10.>  \
+    uAlpha <0. 1. 1.>       
+
+Obj catH.obj
+
+Vertex   helmet.vert
+Fragment helmet.frag
+Program Helmet              \
+    uColor {1. 1. 1. 1.}    \
+    uRadius  <0.01 .3 .5>   \
+    uAlpha <0. 0.5 1.>      \
+
+PushMatrix 
+
+Translate -1.8 3. 0.
+Rotate 180. 0. 1. 0.
+Sphere 1 50 50
+PopMatrix 
+
+Vertex texture.vert
+Fragment texture.frag
+Program Texture  TexUnit 6
+
+Translate 0. 3. 0.
+Texture2D  6  px.bmp
+QuadYZ 5. 5. 10 10
+
+Texture2D  6  nx.bmp
+QuadYZ -5. 5. 10 10
+
+Texture2D  6  py.bmp
+QuadXZ 5. 5. 10 10
+
+Texture2D  6  ny.bmp
+QuadXZ -5. 5. 10 10
+
+Texture2D  6  pz.bmp
+QuadXY 5. 5. 10 10
+
+Texture2D  6  nz.bmp
+QuadXY -5. 5. 10 10

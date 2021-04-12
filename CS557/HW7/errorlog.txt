@@ -1,0 +1,7 @@
+
+ERROR: 0:8: '*' : wrong operand types no operation '*' exists that takes a left-hand operand of type 'uniform 4X4 matrix of highp float' and a right operand of type 'attribute 3-component vector of highp float' (or there is no acceptable conversion)
+ERROR: 0:9: 'normalize' : no matching overloaded function found (using implicit conversion) 
+ERROR: 0:9: 'normalize' : function is not known 
+ERROR: 0:8: 'assign' :  cannot convert from 'const highp float' to 'varying 3-component vector of highp float'
+
+

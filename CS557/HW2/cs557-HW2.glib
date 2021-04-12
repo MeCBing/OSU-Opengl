@@ -1,0 +1,19 @@
+##OpenGL GLIB
+
+Perspective 90
+LookAt 0 2 4  0 2 0  0 1 0
+
+
+Vertex   HW2.vert
+Fragment HW2.frag
+Program  HW2				\
+    uAd <.01 .05 .5>        \
+    uBd <.01 .05 .5>        \
+    uNoiseAmp <0. 0. 1.>    \
+    uNoiseFreq <0. 1. 10.>  \
+	uTol <0. 0. 1.>			\
+	uAlpha <0. 1. 1.>	
+
+Color 1. .5 0.
+#Sphere 1 50 50
+Obj catL.obj

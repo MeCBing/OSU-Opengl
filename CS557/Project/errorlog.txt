@@ -1,0 +1,4 @@
+
+ERROR: 0:101: '=' :  cannot convert from '4-component vector of highp float' to '2-component vector of highp float'
+
+

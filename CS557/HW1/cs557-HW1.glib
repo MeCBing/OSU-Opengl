@@ -1,0 +1,16 @@
+##OpenGL GLIB
+
+Perspective 90
+LookAt 0 2 4  0 2 0  0 1 0
+
+
+Vertex   HW1.vert
+Fragment HW1.frag
+Program  HW1				\
+	uTol <0. 0. .5>			\
+	uAd <.001 .1 .5>		\
+	uBd <.001 .1 .5>		
+
+Color 1. .5 0.
+#Sphere 1 50 50
+Obj catL.obj
